@@ -107,7 +107,6 @@ if($_SERVER['REQUEST_METHOD']=='POST' && isset($_REQUEST['cart'])){
 
 	echo add_item_to_cart($cart);die;
 }
-print_r($_GET);
 if($_SERVER['REQUEST_METHOD']== "DELETE" && $_GET['request']=='2'){
 
 	echo remove_item_from_cart($cart);die;

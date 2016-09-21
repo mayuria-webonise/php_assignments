@@ -1,84 +1,86 @@
 <?php 
 error_reporting(E_ALL);
 function fileExtension(){
-	$extension=pathinfo($_POST['file_name'], PATHINFO_EXTENSION);
-	echo $extension;
+	$extension = pathinfo($_POST['file_name'], PATHINFO_EXTENSION);
+	return $extension;
 }
+
 function customFileExtension(){
-	$array=explode('.',$_POST['file_name']);
-	
-	echo end($array);
+	$array = explode('.',$_POST['file_name']);	
+	return end($array);
 }
+
 function convertToTimezone($timezone)
 {
 	$newTimeZone = new DateTimeZone($timezone);
 	$date = new DateTime($_POST['datetime']);
 	$date->setTimezone($newTimeZone);
-	echo $date->format('l F j Y g:i a')."\n<br/>";
+	return $date->format('l F j Y g:i a')."\n<br/>";
 }
+
 function customConvertToTimezone($timezone)
 {
-	$dateAndTimeArr=explode('T',$_POST['datetime']);
+	$dateAndTimeArr = explode('T',$_POST['datetime']);
 	$time=explode(":", $dateAndTimeArr[1]);
 
 	if(!strcmp($timezone,'America/Los_Angeles'))
 	{
 		echo "los angeles<br/>";
 		
-		$newMins=(int)$time[1]-30;
-		$newHours=(int)$time[0]-12;
-		
+		$newMins = (int)$time[1]-30;
+		$newHours = (int)$time[0]-12;
 	}
 	elseif(!strcmp($timezone,'Europe/London')) 
 	{
 		echo "london";
-		$newMins=(int)$time[1]-30;
-		$newHours=(int)$time[0]-4;	
+		$newMins = (int)$time[1]-30;
+		$newHours = (int)$time[0]-4;	
 	}
-	if($newMins<0)
+	if($newMins < 0)
 	{
 		$newHours=($newHours-1);
 		$newMins=60+$newMins;
 	}
 	$date = new DateTime("$dateAndTimeArr[0]$newHours:$newMins");
-	echo $date->format('l F j Y g:i a')."\n<br/>";
-	//echo "$newMins and $newHours";
+	return $date->format('l F j Y g:i a')."\n<br/>";
 }
+
 function getDateFromDatetime($dateAndTime)
 {
 	$dateAndTimeArr=explode('T',$dateAndTime);
-	$datetime = new DateTime($dateAndTimeArr[0]);
-	return $datetime;
-
+	$dateFromTimestamp = new DateTime($dateAndTimeArr[0]);
+	return $dateFromTimestamp;
 }
-function dateDiff()
+
+function dateDifference()
 {
 	$dateOne=getDateFromDatetime($_POST['datetime1']);
 	$dateTwo=getDateFromDatetime($_POST['datetime2']);
-	$interval = $datetime1->diff($datetime2);
-	
+	$interval = $dateOne->diff($dateTwo);
+	return $interval;
 }
+
 function reverseString()
 {
-	
 	$reversedString=strrev($_POST['reverse_string']);
-	$string=str_split($reversedString,1);
-	$string=array_unique($string);
-	$string=implode("", $string);
-	echo $string."<br/>";
+	$string = str_split($reversedString,1);
+	$string = array_unique($string);
+	$string = implode("", $string);
+	return $string."<br/>";
 }
+
 function customReverseString()
 {
-	$revString = array();
-	for($i=strlen($_POST['reverse_string']),$j=0;$i>=0;$i--,$j++)
+	$reverseString = array();
+	for($negativeLooper = strlen($_POST['reverse_string']),$positiveLooper=0;$negativeLooper>=0;$negativeLooper--,$positiveLooper++)
 	{
-		$revString[$j]=$_POST['reverse_string'][$i];
+		$reverseString[$positiveLooper] = $_POST['reverse_string'][$negativeLooper];
 	}
-	$revString=array_unique($revString);
-	echo implode("", $revString)."<br/>";
+	$reverseString = array_unique($reverseString);
+	return implode("", $reverseString)."<br/>";
 }
-function createCSV(){
 
+function createCSV(){
 	$organisationDetails = array(
       10 => array(
        		 'name' => 'weboniseLab',
@@ -139,13 +141,15 @@ function createCSV(){
      				     ),
      			   )
     		  )
-    );
-    
+    );   
 	$csvFileName = "organisations.csv";
     $csvFilePointer = fopen('php://output', 'w');
     header('Content-type: application/csv');
     header('Content-Disposition: attachment; filename='.$csvFileName);
     $csvArray=array();
+    if(empty($organisationDetails)){
+    	return "array is empty";
+    }
     foreach ($organisationDetails as $organisation => $organisationValues) {
     	$csvRow=array();
     	foreach ($organisationValues['jobRole'] as $roleKey => $roleValue){
@@ -158,81 +162,75 @@ function createCSV(){
 	    		$csvRow['cfa_Id']='-';
 	    		$csvRow['rfa_name']='-';
 	    		$csvRow['jobRole_name']=$roleValue['name'];
-	    		$csvRow['jobRole_Id']=$roleKey;
-	    		
+	    		$csvRow['jobRole_Id']=$roleKey;  		
     			array_push($csvArray, $csvRow);
-					
 	    	}
 	    	foreach ($organisationValues['cfa'] as $cfaKey => $cfaValue) {
-
-	    			$csvRow['created']=$roleValue['created'];
-		    		$csvRow['organisation_name']=$organisationValues['name'];
-		    		$csvRow['organisation_Id']=$organisation;
-		    		$csvRow['cfa_name']=$cfaValue['name'];
-		    		$csvRow['cfa_Id']=$cfaKey;
-		    		$csvRow['rfa_name']='-';
-		    		$csvRow['jobRole_name']=$roleValue['name'];
-		    		$csvRow['jobRole_Id']=$roleKey;
-    				array_push($csvArray, $csvRow);    				
-				}   		
-    		
-    	}
-    	
-    
+    			$csvRow['created']=$roleValue['created'];
+	    		$csvRow['organisation_name']=$organisationValues['name'];
+	    		$csvRow['organisation_Id']=$organisation;
+	    		$csvRow['cfa_name']=$cfaValue['name'];
+	    		$csvRow['cfa_Id']=$cfaKey;
+	    		$csvRow['rfa_name']='-';
+	    		$csvRow['jobRole_name']=$roleValue['name'];
+	    		$csvRow['jobRole_Id']=$roleKey;
+				array_push($csvArray, $csvRow);    				
+			}   		
+    	}   
     }
     
-    function date_compare($a, $b)
+    function date_compare($createdDateOne, $createdDateTwo)
 	{
-	    $t1 = strtotime($a['created']);
-	    $t2 = strtotime($b['created']);
-	    return $t2 - $t1;
+	    $dateValueOne = strtotime($createdDateOne['created']);
+	    $dateValueTwo = strtotime($createdDateTwo['created']);
+	    return $dateValueTwo - $dateValueOne;
 	}    
 	usort($csvArray, 'date_compare');
 	$header= array('created',"organisation_name","organisation_Id","cfa_name","cfa_Id","rfa_name","JR_Id","JR_Name");
 	fputcsv($csvFilePointer, $header);
 	$row=array();
+	if(empty($csvArray)){
+		return "csv Array is empty";
+	}
 	foreach ($csvArray as $rowIndex => $rowValue) {
 		$row=array();
-		foreach ($rowValue as $rowkey => $rowvalue) {
-			array_push($row, $rowvalue);
+		foreach ($rowValue as $subrowkey => $subrowvalue) {
+			array_push($row, $subrowvalue);
 		}
 	fputcsv($csvFilePointer, $row);	
 	}
-
     die;
-    
 }
+
 if(isset($_POST['file_name']))
 {
-	fileExtension();
-	customFileExtension();
+	echo fileExtension();
+	echo customFileExtension();
 }
 if(isset($_POST['datetime1']) && isset($_POST['datetime2']))
 {
-	dateDiff();
+	echo dateDifference();
 }
 if(isset($_POST['convert_to_us']))
 {
-	convertToTimezone('America/Los_Angeles');
-	customConvertToTimezone('America/Los_Angeles');
+	echo convertToTimezone('America/Los_Angeles');
+	echo customConvertToTimezone('America/Los_Angeles');
 }
-
 if(isset($_POST['convert_to_uk']))
 {
-	convertToTimezone('Europe/London');
-	customConvertToTimezone('Europe/London');
+	echo convertToTimezone('Europe/London');
+	echo customConvertToTimezone('Europe/London');
 }
 if(isset($_POST['reverse_string']))
 {
-	reverseString();
-	customReverseString();
+	echo reverseString();
+	echo customReverseString();
 }
 if (isset($_POST['toCSV']))
 {
 	createCSV();
 }
 ?>
-
 <html>
 	<body>
 		<form action="index.php" method="post">
